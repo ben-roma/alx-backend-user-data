@@ -1,25 +1,12 @@
 #!/usr/bin/env python3
-"""
-This module defines a function `filter_datum` that obfuscates log messages.
-"""
+"""Module for obfuscating log messages"""
+
 import re
+from typing import List
 
-
-def filter_datum(fields, redaction, message, separator):
-    """
-    Returns the log message obfuscated.
-
-    Args:
-        fields (list): A list of strings representing all fields to obfuscate.
-        redaction (str): A string representing by what the field will be obfuscated.
-        message (str): A string representing the log line.
-        separator (str): A string representing by which character is separating
-                         all fields in the log line (message).
-
-    Returns:
-        str: The obfuscated log message.
-    """
-    for field in fields:
-        message = re.sub(f'{field}=.*?{separator}', f'{field}=
-                         {redaction}{separator}', message)
-    return message
+def filter_datum(
+    fields: List[str], redaction: str, message: str, separator: str
+) -> str:
+    """Obfuscate the message by replacing field values with redaction"""
+    pattern = r'({})=([^{}]*)'.format('|'.join(fields), separator)
+    return re.sub(pattern, r'\1={}{}'.format(redaction, separator), message)
